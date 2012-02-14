@@ -1,7 +1,6 @@
 package com.trainings;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 /**
@@ -19,43 +18,44 @@ public class BoxDiagram implements ActionListener {
     private JTextArea output;
     private JLabel label;
     private JButton addButton, removeButton, clearButton;
-    // Constructor
+
     public BoxDiagram() {
-        // Create the frame and container.
         frame = new JFrame("BoxDiagram");
-        panel = new JPanel();
-        //panel.setLayout(new GridLayout(2, 2));
-        // Add the widgets.
-        addWidgets();
-        // Add the panel to the frame.
-        frame.getContentPane().add(panel, BorderLayout.SOUTH);
-        // Exit when the window is closed.
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // Show the converter.
-        frame.pack();
+
+        panel = new JPanel();
+        panel.setLayout(null);
+
+        addWidgets();
+
+        frame.add(panel);
+        frame.setSize(600,400);
         frame.setVisible(true);
     }
-    // Create and add the widgets for converter.
-    private void addWidgets() {
-        // Create widgets.
-        label = new JLabel("Program", SwingConstants.LEFT);
-        label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+    private void addWidgets() {
+        label = new JLabel("Program");
         input = new JTextField(10);
         input.requestFocus();
 
-        output = new JTextArea(25, 50);
+        output = new JTextArea();
         output.setEditable(false);
 
         addButton = new JButton("Add");
         removeButton = new JButton("Remove");
         clearButton = new JButton("Clear");
 
-        // Listen to events from Convert addButton.
         addButton.addActionListener(this);
         removeButton.addActionListener(this);
         clearButton.addActionListener(this);
-        // Add widgets to container.
+
+        label.setBounds(0, 285, 100, 50);
+        input.setBounds(110, 300, 200, 25);
+        addButton.setBounds(320, 300, 75, 25);
+        removeButton.setBounds(400, 300, 95, 25);
+        clearButton.setBounds(500, 300, 75, 25);
+        output.setBounds(0, 0, 600, 250);
+
         panel.add(output);
         panel.add(label);
         panel.add(input);
