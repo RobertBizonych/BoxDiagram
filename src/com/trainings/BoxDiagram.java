@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 /**
+ *
  * Created by IntelliJ IDEA.
  * User: Tigra
  * Date: 13.02.12
@@ -81,3 +82,4 @@ public class BoxDiagram implements ActionListener {
     }
 
 }
+
