@@ -1,12 +1,14 @@
 package com.trainings;
+
 import acm.graphics.*;
 import acm.program.GraphicsProgram;
-import acm.program.Program;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Tigra
@@ -14,51 +16,84 @@ import java.awt.event.ActionListener;
  * Time: 17:31
  * To change this template use File | Settings | File Templates.
  */
-public class BoxDiagram implements ActionListener{
+public class BoxDiagram implements ActionListener {
     private JTextField input;
-    //Создаем классовую переменную в которой храним canvas
     private MyCanvas canvas;
+    private JPanel panel;
 
-    class MyCanvas extends GraphicsProgram implements ActionListener {
-        GCanvas gCanvas;
+    class MyCanvas extends GraphicsProgram {
+        private GCanvas myCanvas;
+        private LinkedHashMap<String, MyRectangle> rectangles;
+
         MyCanvas() {
-            gCanvas = new GCanvas();
-           /* int width = gCanvas.getWidth()/2;
-            int height = gCanvas.getHeight()/2;*/
-           // gCanvas.setBackground(Color.green);
-            gCanvas.setVisible(true);
-            GRect rect = new GRect(50, 50, 50, 50);
-            GLabel gLabel = new GLabel("Test", 60,70);
-            gCanvas.add(rect);
-            gCanvas.add(gLabel);
+            myCanvas = new GCanvas();
+            rectangles = new LinkedHashMap<String, MyRectangle>();
+            myCanvas.setVisible(true);
         }
 
-        public void clearCanvas(){
-            //Будешь вызывать для очистки канваса
+        public void clear() {
+            myCanvas.removeAll();
+            rectangles.clear();
         }
-        public GCanvas getGCanvas(){
-            return gCanvas;
-        }
-        public void addElement(MyRectangle rect) {
-            //псевдо метод add. Посмотри как в ACM добавлять элемент к GCanvas
-            // Разберись каким образом можно запихнуть GRectangle в GCanvas
-            GRectangle realRectangle = rect.getGRectangle();
-            gCanvas.add(rect);
-        }
-    }
 
-    class MyRectangle extends Canvas {
-        GRectangle gRectangle;
-        MyRectangle(){
-            //Создаешь GRectangle, GLable, GCompound
-           gRectangle = new GRectangle(70,70);
-            // и т.д.
+        public void removeElement(String rectangleLabel){
+            MyRectangle rect = rectangles.get(rectangleLabel);
+            if(rect != null){
+                rectangles.remove(rectangleLabel);
+                myCanvas.remove(rect.getCompound());
+            }
         }
-        public GRectangle getGRectangle(){
-            return gRectangle;
+        
+        public GCanvas getGCanvas() {
+            return myCanvas;
+        }
+
+        public void addElement(MyRectangle myRectangle) {
+            String label = myRectangle.getLabelText();
+            boolean rectangleDefined = rectangles.keySet().contains(label);
+            if(!rectangleDefined){
+                rectangles.put(label, myRectangle);
+                myCanvas.add(myRectangle.getCompound());
+            }
         }
 
     }
+
+    class MyRectangle extends GraphicsProgram {
+        private GRect rectangle;
+        private GLabel label;
+        private GCompound compound;
+        private double xPosition;
+        private double yPosition;
+        private static final double BOX_WIDTH = 120;
+        private static final double BOX_HEIGHT = 50;
+        private double xLabelPosition = BOX_WIDTH / 3;
+        private double yLabelPosition = BOX_HEIGHT / 2;
+
+        MyRectangle(String labelText, JPanel panel) {
+            xPosition = (panel.getWidth() - BOX_WIDTH)/2;
+            yPosition = (panel.getHeight() - BOX_HEIGHT)/2;
+            xLabelPosition = xPosition + xLabelPosition;
+            yLabelPosition = yPosition + yLabelPosition;
+
+            rectangle = new GRect(xPosition, yPosition, BOX_WIDTH, BOX_HEIGHT);
+            label = new GLabel(labelText, xLabelPosition, yLabelPosition);
+
+            compound = new GCompound();
+            compound.add(rectangle);
+            compound.add(label);
+            compound.setVisible(true);
+        }
+
+        public String getLabelText() {
+            return label.getLabel();
+        }
+
+        public GCompound getCompound() {
+            return compound;
+        }
+    }
+
     public BoxDiagram() {
         JFrame frame = new JFrame("BoxDiagram");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,7 +108,7 @@ public class BoxDiagram implements ActionListener{
     }
 
     public void createCanvasPanel(Container contentPane) {
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         canvas = new MyCanvas();
         panel.add(canvas.getGCanvas());
@@ -83,29 +118,18 @@ public class BoxDiagram implements ActionListener{
         contentPane.add(panel, BorderLayout.CENTER);
     }
 
-    // Запускаешь метод когда пользователь нажимает на кнопку
-    public void drawRectangle(){
-        MyRectangle rectangle = new MyRectangle();
-        canvas.add(rectangle);
-    }
-
     public void createBoxPanel(Container contentPane) {
         JLabel label = new JLabel("Program");
-        JTextField input = new JTextField(10);
+        input = new JTextField(10);
         JButton addButton = new JButton("Add");
         JButton removeButton = new JButton("Remove");
         JButton clearButton = new JButton("Clear");
+
         input.addActionListener(this);
         addButton.addActionListener(this);
-        /*    @Override
-            public void actionPerformed(ActionEvent e) {
-                JDialog d = new JDialog(, "Hello", true);
-                d.setLocationRelativeTo(frame);
-                d.setVisible(true);
-            }
-        });*/
-//        removeButton.addActionListener(this);
-//        clearButton.addActionListener(this);
+        removeButton.addActionListener(this);
+        clearButton.addActionListener(this);
+
         Box box = Box.createHorizontalBox();
         box.add(label);
         box.add(input);
@@ -115,25 +139,27 @@ public class BoxDiagram implements ActionListener{
         contentPane.add(box, BorderLayout.PAGE_END);
     }
 
-    // Implementation of ActionListener interface.
-    public void actionPerformed (ActionEvent event) {
-        /*GRect rect = new GRect(30,30,30,30);
-        rect.setFilled(true);
-        rect.setVisible(true);*/
+    public void actionPerformed(ActionEvent event) {
         String inputString = input.getText();
-        if (event.getActionCommand().equals("Add")){
-            canvas.gCanvas.add(new GRect(70,70,70,70));
-            canvas.gCanvas.add(new GLabel(inputString,80,80));
-            input.setText("");
+
+        if (event.getActionCommand().equals("Add")) {
+            MyRectangle rectangle = new MyRectangle(inputString, panel);
+            canvas.addElement(rectangle);
         }
+        if (event.getActionCommand().equals("Remove")) {
+            canvas.removeElement(inputString);
+        }
+        if (event.getActionCommand().equals("Clear")) {
+            canvas.clear();
+        }
+        input.setText("");
+        input.requestFocus();
     }
 
-    // main method
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         BoxDiagram converter = new BoxDiagram();
     }
