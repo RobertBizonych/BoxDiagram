@@ -13,6 +13,7 @@ import javax.swing.*;
 
 
 public class BoxLayOut implements ItemListener {
+
     protected static int NUM_COMPONENTS = 3;
     protected static float[] xAlignment = {
             Component.LEFT_ALIGNMENT,

@@ -1,10 +1,11 @@
 package com.trainings;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 /**
- *
  * Created by IntelliJ IDEA.
  * User: Tigra
  * Date: 13.02.12
@@ -12,71 +13,69 @@ import java.awt.event.ActionListener;
  * To change this template use File | Settings | File Templates.
  */
 public class BoxDiagram implements ActionListener {
-    private JFrame frame;
-    private JPanel panel;
     private JTextField input;
-    private JTextArea output;
-    private JLabel label;
-    private JButton addButton, removeButton, clearButton;
+
+    class MyCanvas extends JComponent {
+
+        public void paint(Graphics g) {
+            g.drawRect(10, 10, 200, 200);
+        }
+
+    }
 
     public BoxDiagram() {
-        frame = new JFrame("BoxDiagram");
+        JFrame frame = new JFrame("BoxDiagram");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        panel = new JPanel();
-        panel.setLayout(null);
+        createCanvasPanel(frame.getContentPane());
+        createBoxPanel(frame.getContentPane());
 
-        addWidgets();
-
-        frame.add(panel);
-        frame.setSize(600,400);
+        frame.pack();
+        frame.setSize(600, 500);
         frame.setVisible(true);
     }
 
-    private void addWidgets() {
-        label = new JLabel("Program");
-        input = new JTextField(10);
-        input.requestFocus();
+    public void createCanvasPanel(Container contentPane) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.add(new MyCanvas());
+        panel.setBorder(BorderFactory.createLineBorder(Color.black));
+        panel.setBackground(Color.white);
+        contentPane.add(panel, BorderLayout.CENTER);
+    }
 
-        output = new JTextArea();
-        output.setEditable(false);
+    public void createBoxPanel(Container contentPane) {
+        JLabel label = new JLabel("Program");
+        JTextField input = new JTextField(10);
+        JButton addButton = new JButton("Add");
+        JButton removeButton = new JButton("Remove");
+        JButton clearButton = new JButton("Clear");
 
-        addButton = new JButton("Add");
-        removeButton = new JButton("Remove");
-        clearButton = new JButton("Clear");
+//        addButton.addActionListener(this);
+//        removeButton.addActionListener(this);
+//        clearButton.addActionListener(this);
 
-        addButton.addActionListener(this);
-        removeButton.addActionListener(this);
-        clearButton.addActionListener(this);
-
-        label.setBounds(0, 285, 100, 50);
-        input.setBounds(110, 300, 200, 25);
-        addButton.setBounds(320, 300, 75, 25);
-        removeButton.setBounds(400, 300, 95, 25);
-        clearButton.setBounds(500, 300, 75, 25);
-        output.setBounds(0, 0, 600, 250);
-
-        panel.add(output);
-        panel.add(label);
-        panel.add(input);
-        panel.add(addButton);
-        panel.add(removeButton);
-        panel.add(clearButton);
+        Box box = Box.createHorizontalBox();
+        box.add(label);
+        box.add(input);
+        box.add(addButton);
+        box.add(removeButton);
+        box.add(clearButton);
+        contentPane.add(box, BorderLayout.PAGE_END);
     }
 
     // Implementation of ActionListener interface.
     public void actionPerformed(ActionEvent event) {
         String inputString = input.getText();
-        output.append(inputString + "\n");
+
         input.setText("");
     }
+
     // main method
     public static void main(String[] args) {
-        // set the look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         BoxDiagram converter = new BoxDiagram();
     }
