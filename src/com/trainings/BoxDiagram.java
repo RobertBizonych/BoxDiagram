@@ -1,14 +1,11 @@
 package com.trainings;
-
 import acm.graphics.*;
 import acm.program.GraphicsProgram;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.*;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Tigra
@@ -155,8 +152,46 @@ public class BoxDiagram implements ActionListener {
         input.setText("");
         input.requestFocus();
     }
-
-    public static void main(String[] args) {
+  /*  class EventMouseListener extends MouseAdapter {
+        public void mousePressed(MouseEvent event) {
+            MyRectangle grect = new MyRectangle(input.getText(),panel);
+            rectangle = grect.getBounds2D();
+            display(rect2);
+            p1 = event.getX();
+            q1 = event.getY();
+        }
+        public void mouseReleased(MouseEvent event) {
+            rectangle = rect1.getBounds2D();
+            rect2 = rect1;
+            display(rect2);
+        }
+        public void mouseClicked(MouseEvent event) {
+            rect2 = rect1;
+            rectangle = rect1.getBounds2D();
+            display(rect2);
+        }
+    }
+    class EventMouseMotionListener extends MouseMotionAdapter {
+        public void mouseDragged(MouseEvent event) {
+            if (rect1.contains(event.getX(), event.getY())) {
+                rectangle = null;
+                rect2 = rect1;
+                p2 = event.getX();
+                q2 = event.getY();
+                p = p + p2 - p1;
+                q = q + q2 - q1;
+                p1 = p2;
+                q1 = q2;
+            }
+            if (rect2 != null)
+                display(rect2);
+            canvas.repaint();
+        }
+        public void mouseMoved(MouseEvent event) {
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+        }
+    }
+  */  public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
