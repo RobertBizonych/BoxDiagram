@@ -40,7 +40,7 @@ public class BoxDiagram implements ActionListener {
                 myCanvas.remove(rect.getCompound());
             }
         }
-        
+
         public GCanvas getGCanvas() {
             return myCanvas;
         }
@@ -56,29 +56,31 @@ public class BoxDiagram implements ActionListener {
 
     }
 
-    class MyRectangle extends GraphicsProgram {
+    class MyRectangle extends GraphicsProgram implements MouseListener, MouseMotionListener {
+        private GPoint last;
+        private boolean drag;
         private GRect rectangle;
         private GLabel label;
         private GCompound compound;
-        private double xPosition;
-        private double yPosition;
-        private static final double BOX_WIDTH = 120;
-        private static final double BOX_HEIGHT = 50;
-        private double xLabelPosition = BOX_WIDTH / 3;
-        private double yLabelPosition = BOX_HEIGHT / 2;
+        private final double BOX_WIDTH = 120;
+        private final double BOX_HEIGHT = 50;
+        private final double xLabelPosition = BOX_WIDTH / 3;
+        private final double yLabelPosition = BOX_HEIGHT / 2;
 
         MyRectangle(String labelText, JPanel panel) {
-            xPosition = (panel.getWidth() - BOX_WIDTH)/2;
-            yPosition = (panel.getHeight() - BOX_HEIGHT)/2;
-            xLabelPosition = xPosition + xLabelPosition;
-            yLabelPosition = yPosition + yLabelPosition;
+            double xPosition = (panel.getWidth() - BOX_WIDTH)/2;
+            double yPosition = (panel.getHeight() - BOX_HEIGHT)/2;
+            double labelX = xPosition + xLabelPosition;
+            double labelY = yPosition + yLabelPosition;
 
             rectangle = new GRect(xPosition, yPosition, BOX_WIDTH, BOX_HEIGHT);
-            label = new GLabel(labelText, xLabelPosition, yLabelPosition);
+            label = new GLabel(labelText, labelX, labelY);
 
             compound = new GCompound();
             compound.add(rectangle);
             compound.add(label);
+            rectangle.addMouseListener(this);
+            rectangle.addMouseMotionListener(this);
             compound.setVisible(true);
         }
 
@@ -88,6 +90,42 @@ public class BoxDiagram implements ActionListener {
 
         public GCompound getCompound() {
             return compound;
+        }
+
+        public void mousePressed(MouseEvent e) {
+            drag = true;
+            last = new GPoint(e.getPoint());
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            drag = false;
+            System.out.println("rectXel" + (rectangle.getX()) + " rectYel " + (rectangle.getY()));
+        }
+
+        public void mouseDragged(MouseEvent e) {
+            if (drag) {
+                double currentX = last.getX();
+                double currentY = last.getY();
+                rectangle.setBounds(currentX, currentY, BOX_WIDTH, BOX_HEIGHT);
+
+                double labelY = rectangle.getY() + yLabelPosition;
+                double labelX = rectangle.getX() + xLabelPosition;
+                label.setLocation(labelX, labelY);
+                last = new GPoint(e.getPoint());
+            }
+        }
+
+        public void mouseMoved(MouseEvent e) {
+        }
+
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        public void mouseExited(MouseEvent e) {
+        }
+
+        public void mouseClicked(MouseEvent e) {
+            if (!drag) rectangle.sendToFront();
         }
     }
 
@@ -152,46 +190,8 @@ public class BoxDiagram implements ActionListener {
         input.setText("");
         input.requestFocus();
     }
-  /*  class EventMouseListener extends MouseAdapter {
-        public void mousePressed(MouseEvent event) {
-            MyRectangle grect = new MyRectangle(input.getText(),panel);
-            rectangle = grect.getBounds2D();
-            display(rect2);
-            p1 = event.getX();
-            q1 = event.getY();
-        }
-        public void mouseReleased(MouseEvent event) {
-            rectangle = rect1.getBounds2D();
-            rect2 = rect1;
-            display(rect2);
-        }
-        public void mouseClicked(MouseEvent event) {
-            rect2 = rect1;
-            rectangle = rect1.getBounds2D();
-            display(rect2);
-        }
-    }
-    class EventMouseMotionListener extends MouseMotionAdapter {
-        public void mouseDragged(MouseEvent event) {
-            if (rect1.contains(event.getX(), event.getY())) {
-                rectangle = null;
-                rect2 = rect1;
-                p2 = event.getX();
-                q2 = event.getY();
-                p = p + p2 - p1;
-                q = q + q2 - q1;
-                p1 = p2;
-                q1 = q2;
-            }
-            if (rect2 != null)
-                display(rect2);
-            canvas.repaint();
-        }
-        public void mouseMoved(MouseEvent event) {
-            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-        }
-    }
-  */  public static void main(String[] args) {
+
+    public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
